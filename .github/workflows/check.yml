@@ -1,0 +1,47 @@
+name: check
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+      timezone: 'Asia/Seoul'   # 12:00 KST = 03:00 UTC
+    - cron: '0 18 * * *'
+      timezone: 'Asia/Seoul'   # 18:00 KST = 09:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: edu-notifier-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - run: pip install -r requirements.txt
+
+      - name: 사이트 확인 및 알림
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python main.py
+
+      - name: seen.json 변경 시에만 커밋
+        run: |
+          if ! git diff --quiet -- seen.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add seen.json
+            git commit -m "chore: update seen.json"
+            git push
+          else
+            echo "seen.json 변경 없음, 커밋 생략"
+          fi
