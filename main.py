@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 import notify
-from scrapers import site_a, site_b, site_c, site_d
+from scrapers import site_a, site_b, site_c, site_d, site_e, site_f
 
 SEEN_PATH = Path(__file__).parent / "seen.json"
 MAX_SEEN = 500
@@ -17,6 +17,8 @@ SITES = [
     ("반도체인프라활용현장인력양성", site_b, "B"),
     ("차세대반도체컨소시엄", site_c, "C"),
     ("인하대 취업프로그램", site_d, "D"),
+    ("한국반도체교육원(KSTI)", site_e, "E"),
+    ("나노종합기술원", site_f, "F"),
 ]
 
 
