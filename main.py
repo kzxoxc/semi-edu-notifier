@@ -3,6 +3,7 @@ Git 커밋/푸시는 여기서 안 함 — GitHub Actions 워크플로 쪽 책�
 """
 import json
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import notify
@@ -10,6 +11,7 @@ from scrapers import site_a, site_b, site_c, site_d, site_e, site_f, site_g
 
 SEEN_PATH = Path(__file__).parent / "seen.json"
 MAX_SEEN = 500
+KST = timezone(timedelta(hours=9))
 
 # (표시용 이름, 스크래퍼 모듈, seen.json 안에서 id 충돌 안 나게 붙이는 접두어)
 SITES = [
@@ -52,6 +54,18 @@ def main():
         if len(items) == 0:
             notify.send_zero_warning(name)
             continue
+
+        # D-1 미리알림: 신청시작이 내일인 공고. "R:" 키로 한 번만 보낸다 (seen.json 공용).
+        tomorrow = (datetime.now(KST).date() + timedelta(days=1)).isoformat()
+        due = [it for it in items
+               if (it.get("apply_start") or "")[:10] == tomorrow
+               and f"R:{prefix}:{it['id']}" not in seen_set]
+        if due:
+            notify.send_reminders(name, due)
+            for it in due:
+                key = f"R:{prefix}:{it['id']}"
+                seen_set.add(key)
+                newly_seen.append(key)
 
         new_items = [it for it in items if f"{prefix}:{it['id']}" not in seen_set]
         if new_items:

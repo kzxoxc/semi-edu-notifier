@@ -68,6 +68,18 @@ def send_new_items(site_name, items):
     _send_chunked(lines)
 
 
+def send_reminders(site_name, items):
+    """신청 시작 D-1 미리알림."""
+    lines = [f"⏰ [{site_name}] 내일 신청 시작 {len(items)}건", ""]
+    for it in items:
+        lines.append(f"• {it['title']}")
+        lines.append(f"  신청시작: {it['apply_start']}")
+        lines.append(f"  마감: {it.get('deadline') or '미기재'}")
+        lines.append(f"  {it['url']}")
+        lines.append("")
+    _send_chunked(lines)
+
+
 def send_zero_warning(site_name):
     _send_raw(f"⚠️ [{site_name}] 파싱 결과 0건 — 셀렉터 점검 필요")
 

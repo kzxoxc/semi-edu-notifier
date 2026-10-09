@@ -2,10 +2,8 @@ name: check
 
 on:
   schedule:
-    - cron: '0 12 * * *'
-      timezone: 'Asia/Seoul'   # 12:00 KST = 03:00 UTC
-    - cron: '0 18 * * *'
-      timezone: 'Asia/Seoul'   # 18:00 KST = 09:00 UTC
+    - cron: '0 3 * * *'   # 12:00 KST
+    - cron: '0 9 * * *'   # 18:00 KST
   workflow_dispatch:
 
 permissions:
