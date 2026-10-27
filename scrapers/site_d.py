@@ -14,8 +14,9 @@ GET으로도 같은 결과 나옴 — 실측 확인). prodiv 파라미터 생략
 import hashlib
 import re
 
-import requests
 from bs4 import BeautifulSoup
+
+from . import retry_session
 
 LIST_URL = "https://job.inha.ac.kr/community/Program/ProgramList.aspx"
 DETAIL_URL = "https://job.inha.ac.kr/community/Program/programView.aspx?pgdx={}"
@@ -63,9 +64,10 @@ def _parse_page(html):
 
 def fetch():
     result, seen_ids = [], set()
+    session = retry_session()
     for page in range(1, MAX_PAGES + 1):
         params = {} if page == 1 else {"rp": page}
-        resp = requests.get(LIST_URL, params=params, headers=HEADERS, timeout=15)
+        resp = session.get(LIST_URL, params=params, headers=HEADERS, timeout=15)
         resp.raise_for_status()
         resp.encoding = "utf-8"  # 서버가 헤더에 charset 안 붙여줘서 requests가 오탐지함
         page_items = _parse_page(resp.text)

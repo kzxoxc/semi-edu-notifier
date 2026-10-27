@@ -9,8 +9,9 @@ site_b와 동일한 한계라 링크는 목록 페이지 URL로 대체한다.
 """
 import re
 
-import requests
 from bs4 import BeautifulSoup
+
+from . import retry_session
 
 LIST_URL = "https://www.nnfc.re.kr/prog/edu/kor/sub01_03_04_02/list_year.do"
 HEADERS = {
@@ -27,7 +28,7 @@ def _dates_in(text):
 
 
 def fetch():
-    resp = requests.get(LIST_URL, headers=HEADERS, timeout=15)
+    resp = retry_session().get(LIST_URL, headers=HEADERS, timeout=15)
     resp.raise_for_status()
     soup = BeautifulSoup(resp.text, "html.parser")
 

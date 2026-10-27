@@ -48,6 +48,7 @@ def main():
         try:
             items = module.fetch()
         except Exception as e:
+            print(f"[{name}] {type(e).__name__}: {e}")  # Actions 로그에도 남김
             notify.send_error(name, type(e).__name__, str(e))
             continue
 
